@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusCompass - IIIT-Delhi Navigation & Wireframe Flow</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --accent-green: #16a34a;
+      --bg-dark: #0f172a;
+      --card-dark: #1e293b;
+      --border-dark: #334155;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Radial Grid Background for Wireframe Flow Stage */
+    .grid-stage {
+      background-image: radial-gradient(#334155 1.5px, transparent 1.5px);
+      background-size: 28px 28px;
+    }
+
+    /* Miniature & Full Frame iPhone Wireframe Styling */
+    .iphone-frame {
+      width: 250px;
+      height: 500px;
+      background: #ffffff;
+      border-radius: 36px;
+      border: 9px solid #334155;
+      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      color: #0f172a;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .iphone-frame:hover {
+      transform: translateY(-6px) scale(1.02);
+      border-color: #38bdf8;
+      box-shadow: 0 25px 40px -5px rgba(56, 189, 248, 0.35);
+    }
+
+    .iphone-notch {
+      width: 100px;
+      height: 18px;
+      background: #334155;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      z-index: 100;
+    }
+
+    .iphone-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #f8fafc;
+      padding-top: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Screen Connections Canvas SVG Layer */
+    .flow-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Animated Accessible Route Path */
+    .animated-route {
+      stroke-dasharray: 8;
+      animation: routeDash 1.2s linear infinite;
+    }
+
+    @keyframes routeDash {
+      to {
+        stroke-dashoffset: -32;
+      }
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #0284c7;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAVIGATION HEADER & MODE SWITCHER -->
+  <header class="bg-slate-900 border-b border-slate-800 px-6 py-3.5 flex flex-wrap justify-between items-center z-50 sticky top-0 shadow-lg">
+    <div class="flex items-center gap-3">
+      <div class="bg-sky-500 text-white p-2 rounded-xl text-lg shadow-md shadow-sky-500/20">
+        <i class="fa-solid fa-compass fa-spin-pulse" style="--fa-animation-duration: 12s;"></i>
+      </div>
+      <div>
+        <h1 class="font-bold text-lg text-slate-100 leading-tight">CampusCompass <span class="text-xs bg-sky-950 text-sky-400 font-semibold px-2 py-0.5 rounded-full border border-sky-800 ml-1.5">IIIT-Delhi</span></h1>
+        <p class="text-xs text-slate-400">Inclusive Campus Navigation • Freshers, Guests & Wheelchair Mobility</p>
+      </div>
+    </div>
+
+    <!-- Mode Switcher Buttons -->
+    <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 mt-2 sm:mt-0">
+      <button id="tab-mindmap" onclick="switchView('mindmap')" class="px-4 py-2 text-xs font-bold rounded-lg transition-all text-white bg-sky-600 shadow-md">
+        <i class="fa-solid fa-diagram-project mr-1.5"></i> Wireframe Mindmap Flow
+      </button>
+      <button id="tab-prototype" onclick="switchView('prototype')" class="px-4 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-white">
+        <i class="fa-solid fa-play mr-1.5 text-emerald-400"></i> Play Interactive Prototype ▶
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-1 relative flex overflow-hidden">
+
+    <!-- VIEW 1: WIREFRAME MINDMAP FLOW (FLOWCHART OF ALL 8 IPHONE SCREENS) -->
+    <section id="view-mindmap" class="flex-1 grid-stage p-8 overflow-auto relative min-h-[900px]">
+      
+      <!-- SVG Overlay for Crisp Curved Connecting Arrows -->
+      <svg class="flow-canvas" id="flow-svg">
+        <defs>
+          <marker id="arrowhead" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8"/>
+          </marker>
+        </defs>
+      </svg>
+
+      <!-- Flow Chart Nodes Layout Container -->
+      <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 gap-y-16 relative z-10 py-6">
+
+        <!-- SCREEN 1: LOGIN / GUEST ACCESS -->
+        <div class="flex flex-col items-center" id="node-s1">
+          <div class="mb-3 flex items-center gap-2 bg-slate-800/90 text-sky-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700 shadow">
+            <span class="w-5 h-5 bg-sky-500 text-white rounded-full flex items-center justify-center text-[10px]">1</span>
+            User Login / Guest Access
+          </div>
+          <div class="iphone-frame" onclick="openPrototypeAt('screen-login')">
+            <div class="iphone-notch"></div>
+            <div class="iphone-screen p-3 flex flex-col justify-between bg-gradient-to-b from-sky-50 to-slate-100">
+              <div class="text-center mt-6">
+                <div class="w-12 h-12 bg-sky-600 rounded-2xl flex items-center justify-center text-white text-xl mx-auto shadow-md mb-2">🧭</div>
+                <h3 class="font-bold text-sm text-slate-800">CampusCompass</h3>
+                <p class="text-[10px] text-slate-500">Indraprastha Institute of Information Technology Delhi</p>
+              </div>
+
+              <div class="space-y-2 my-auto">
+                <div class="bg-white p-2 rounded-lg border border-slate-200 text-[10px] text-slate-400 flex items-center gap-1.5">
+                  <i class="fa-solid fa-envelope text-slate-300"></i> roll_no@iiitd.ac.in
+                </div>
+                <button class="w-full bg-sky-600 text-white font-bold py-2 rounded-lg text-xs shadow">IIITD Single Sign-On</button>
+                <div class="text-center text-[9px] text-slate-400 uppercase tracking-widest my-1">— OR —</div>
+                <button class="w-full bg-slate-200 text-slate-700 font-semibold py-1.5 rounded-lg text-[11px]">Continue as Guest Visitor</button>
+              </div>
+
+              <div class="text-center text-[9px] text-slate-400 border-t border-slate-200 pt-2">
+                ♿ Fully accessible screen-reader path
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN 2: CAMPUS MAP LANDING -->
+        <div class="flex flex-col items-center" id="node-s2">
+          <div class="mb-3 flex items-center gap-2 bg-slate-800/90 text-sky-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700 shadow">
+            <span class="w-5 h-5 bg-sky-500 text-white rounded-full flex items-center justify-center text-[10px]">2</span>
+            Campus Map & Search
+          </div>
+          <div class="iphone-frame" onclick="openPrototypeAt('screen-map')">
+            <div class="iphone-notch"></div>
+            <div class="iphone-screen">
+              <div class="p-2 bg-white border-b border-slate-200">
+                <div class="bg-slate-100 rounded-lg p-1.5 flex items-center gap-1.5 border border-slate-200">
+                  <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
+                  <span class="text-[10px] text-slate-400">Search room, block or venue...</span>
+                </div>
+              </div>
+              <div class="flex-1 bg-emerald-50 relative flex items-center justify-center overflow-hidden">
+                <div class="text-center p-2">
+                  <span class="text-2xl">🗺️</span>
+                  <p class="text-[10px] font-bold text-slate-600 mt-1">IIIT-D Phase 2 Masterplan</p>
+                  <p class="text-[8px] text-slate-400">OAB, NAB, LHC, Hostels, Oval</p>
+                </div>
+              </div>
+              <div class="bg-white p-2.5 border-t border-slate-200">
+                <div class="text-[10px] font-bold text-slate-800">Explore Campus</div>
+                <p class="text-[9px] text-slate-500">Tap search to navigate to classes or canteen</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN 3: SEARCH & CATEGORY FILTERS -->
+        <div class="flex flex-col items-center" id="node-s3">
+          <div class="mb-3 flex items-center gap-2 bg-slate-800/90 text-sky-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700 shadow">
+            <span class="w-5 h-5 bg-sky-500 text-white rounded-full flex items-center justify-center text-[10px]">3</span>
+            Search & Category Filters
+          </div>
+          <div class="iphone-frame" onclick="openPrototypeAt('screen-search')">
+            <div class="iphone-notch"></div>
+            <div class="iphone-screen p-2.5">
+              <div class="bg-sky-50 rounded-lg p-2 border border-sky-200 mb-2 flex items-center gap-1.5">
+                <i class="fa-solid fa-magnifying-glass text-sky-600 text-xs"></i>
+                <span class="text-[11px] font-bold text-sky-900">Tutorial Room C01</span>
+              </div>
+              <div class="flex gap-1 overflow-hidden mb-3">
+                <span class="bg-sky-600 text-white text-[8px] font-bold px-2 py-0.5 rounded-full">♿ Ramps</span>
+                <span class="bg-slate-200 text-slate-600 text-[8px] px-2 py-0.5 rounded-full">Lecture Halls</span>
+                <span class="bg-slate-200 text-slate-600 text-[8px] px-2 py-0.5 rounded-full">Labs</span>
+              </div>
+              <div class="space-y-1.5">
+                <div class="bg-white p-2 rounded border border-slate-200 text-left shadow-sm">
+                  <div class="text-[10px] font-bold text-slate-800">Tutorial Room C01</div>
+                  <div class="text-[8px] text-slate-500">LHC • Floor 2 • Capacity 60</div>
+                </div>
+                <div class="bg-white p-2 rounded border border-slate-200 text-left opacity-60">
+                  <div class="text-[10px] font-bold text-slate-800">Computer Lab 3</div>
+                  <div class="text-[8px] text-slate-500">R&D Block • Floor 3</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN 4: DESTINATION DETAIL CARD -->
+        <div class="flex flex-col items-center" id="node-s4">
+          <div class="mb-3 flex items-center gap-2 bg-slate-800/90 text-sky-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700 shadow">
+            <span class="w-5 h-5 bg-sky-500 text-white rounded-full flex items-center justify-center text-[10px]">4</span>
+            Destination Info Card
+          </div>
+          <div class="iphone-frame" onclick="openPrototypeAt('screen-detail')">
+            <div class="iphone-notch"></div>
+            <div class="iphone-screen">
+              <div class="flex-1 bg-sky-100 flex items-center justify-center text-[10px] text-sky-700 font-bold">
+                📍 Target Pin: LHC Block
+              </div>
+              <div class="bg-white p-3 border-t-2 border-sky-500 shadow-lg">
+                <div class="flex justify-between items-start mb-1">
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-900">Tutorial Room C01</h4>
+                    <p class="text-[9px] text-slate-500">Lecture Hall Complex • 2nd Floor</p>
+                  </div>
+                  <span class="bg-emerald-100 text-emerald-800 text-[8px] font-bold px-1.5 py-0.5 rounded">4 min walk</span>
+                </div>
+                <div class="text-[8px] bg-slate-100 p-1.5 rounded my-2 text-slate-600">
+                  ✔ Automatic Doors • Lift B Access • Ramp at Entrance
+                </div>
+                <button class="w-full bg-sky-600 text-white text-[10px] font-bold py-1.5 rounded shadow">Get Route</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN 5: ACCESSIBLE ROUTE SELECTION -->
+        <div class="flex flex-col items-center" id="node-s5">
+          <div class="mb-3 flex items-center gap-2 bg-slate-800/90 text-sky-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700 shadow">
+            <span class="w-5 h-5 bg-sky-500 text-white rounded-full flex items-center justify-center text-[10px]">5</span>
+            Step-Free Route Selection
+          </div>
+          <div class="iphone-frame" onclick="openPrototypeAt('screen-map')">
+            <div class="iphone-notch"></div>
+            <div class="iphone-screen">
+              <div class="bg-sky-600 text-white p-2 text-[10px] font-bold flex items-center justify-between">
+                <span>♿ Step-Free Accessible</span>
+                <span class="bg-sky-800 text-[8px] px-1.5 py-0.5 rounded">Active</span>
+              </div>
+              <div class="flex-1 bg-sky-50 p-2 relative flex items-center justify-center">
+                <div class="border-2 border-dashed border-sky-500 rounded-lg p-2 bg-white/80 text-center">
+                  <p class="text-[9px] font-bold text-sky-800">Ramp & Elevator Path</p>
+                  <p class="text-[8px] text-slate-500">Bypasses main staircase</p>
+                </div>
+              </div>
+              <div class="bg-white p-2 border-t border-slate-200 text-center">
+                <button class="w-full bg-emerald-600 text-white text-[10px] font-bold py-1.5 rounded">▶ Start Guidance</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN 6: MULTI-FLOOR INDOOR VIEW -->
+        <div class="flex flex-col items-center" id="node-s6">
+          <div class="mb-3 flex items-center gap-2 bg-slate-800/90 text-sky-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700 shadow">
+            <span class="w-5 h-5 bg-sky-500 text-white rounded-full flex items-center justify-center text-[10px]">6</span>
+            Multi-Floor Indoor Map
+          </div>
+          <div class="iphone-frame" onclick="openPrototypeAt('screen-map')">
+            <div class="iphone-notch"></div>
+            <div class="iphone-screen p-2">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-[10px] font-bold text-slate-800">LHC Indoor Floor plan</span>
+                <div class="flex bg-slate-200 rounded text-[8px] font-bold p-0.5">
+                  <span class="px-1.5 py-0.5 bg-sky-600 text-white rounded">2F</span>
+                  <span class="px-1.5 py-0.5 text-slate-600">1F</span>
+                  <span class="px-1.5 py-0.5 text-slate-600">G</span>
+                </div>
+              </div>
+              <div class="flex-1 bg-slate-100 rounded border border-slate-200 p-2 grid grid-cols-2 gap-1 text-[8px] font-bold text-slate-600 text-center">
+                <div class="bg-sky-200 text-sky-900 border border-sky-400 p-3 rounded">C01</div>
+                <div class="bg-white border border-slate-300 p-3 rounded">C02</div>
+                <div class="bg-white border border-slate-300 p-3 rounded">C03</div>
+                <div class="bg-amber-100 border border-amber-300 p-3 rounded">🛗 Lift B</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN 7: STEP GUIDANCE -->
+        <div class="flex flex-col items-center" id="node-s7">
+          <div class="mb-3 flex items-center gap-2 bg-slate-800/90 text-sky-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700 shadow">
+            <span class="w-5 h-5 bg-sky-500 text-white rounded-full flex items-center justify-center text-[10px]">7</span>
+            Live Turn-by-Turn Guidance
+          </div>
+          <div class="iphone-frame" onclick="openPrototypeAt('screen-navigation')">
+            <div class="iphone-notch"></div>
+            <div class="iphone-screen">
+              <div class="bg-sky-700 text-white p-2.5">
+                <div class="text-[9px] text-sky-200">Step 2 of 3 • Elevator Route</div>
+                <div class="text-xs font-bold flex items-center gap-1 mt-0.5">
+                  <i class="fa-solid fa-arrow-right text-emerald-400"></i> Turn right after Elevator B
+                </div>
+              </div>
+              <div class="flex-1 bg-slate-100 p-3">
+                <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm text-[9px] text-slate-700 space-y-1">
+                  <p class="font-bold text-sky-900">📍 Next Direction:</p>
+                  <p>Walk 10 meters down the corridor. Room C01 is on your left.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCREEN 8: DESTINATION PHOTO PREVIEW -->
+        <div class="flex flex-col items-center" id="node-s8">
+          <div class="mb-3 flex items-center gap-2 bg-slate-800/90 text-sky-400 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700 shadow">
+            <span class="w-5 h-5 bg-sky-500 text-white rounded-full flex items-center justify-center text-[10px]">8</span>
+            Door & Entrance Photo
+          </div>
+          <div class="iphone-frame" onclick="openPrototypeAt('screen-preview')">
+            <div class="iphone-notch"></div>
+            <div class="iphone-screen p-2.5">
+              <div class="text-[10px] font-bold text-slate-800 mb-2">📷 Visual Waypoint Preview</div>
+              <div class="bg-slate-300 rounded-lg h-28 flex items-center justify-center text-slate-600 font-bold text-[10px] border border-slate-400 mb-2">
+                [Doorway Photo of C01]
+              </div>
+              <div class="text-[9px] text-slate-600 bg-white p-2 rounded border border-slate-200">
+                Look for blue sign "C01" beside double automatic glass doors.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW 2: PLAY INTERACTIVE PROTOTYPE MODE -->
+    <section id="view-prototype" class="flex-1 grid-stage hidden items-center justify-center p-6 relative">
+      
+      <!-- Full-Scale Realistic Mobile Frame Container -->
+      <div class="w-[380px] h-[760px] bg-white rounded-[44px] border-[12px] border-slate-700 shadow-2xl flex flex-col relative overflow-hidden text-slate-900">
+        <div class="iphone-notch"></div>
+
+        <!-- APP SCREEN A: LOGIN -->
+        <div id="screen-login" class="proto-screen hidden flex-col h-full bg-gradient-to-b from-sky-50 to-slate-100 pt-8 p-6 justify-between">
+          <div class="text-center mt-8">
+            <div class="w-16 h-16 bg-sky-600 rounded-3xl flex items-center justify-center text-white text-3xl mx-auto shadow-lg shadow-sky-600/30 mb-3">🧭</div>
+            <h2 class="font-bold text-xl text-slate-900">CampusCompass</h2>
+            <p class="text-xs text-slate-500 mt-1">IIIT-Delhi Navigation & Accessibility Portal</p>
+          </div>
+
+          <div class="space-y-3 bg-white/80 backdrop-blur p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">IIITD Email</label>
+              <input type="text" value="student@iiitd.ac.in" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:border-sky-500">
+            </div>
+            <button onclick="openPrototypeAt('screen-map')" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-xl text-xs transition shadow-md shadow-sky-600/20 flex items-center justify-center gap-2">
+              <i class="fa-solid fa-right-to-bracket"></i> Login with IIITD SSO
+            </button>
+            <div class="text-center text-[10px] text-slate-400 font-semibold uppercase tracking-widest my-1">— OR —</div>
+            <button onclick="openPrototypeAt('screen-map')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs border border-slate-300 transition">
+              Continue as Guest Visitor
+            </button>
+          </div>
+
+          <div class="text-center text-[10px] text-slate-400 pb-2">
+            ♿ Configured for screen-readers & mobility assistance
+          </div>
+        </div>
+
+        <!-- APP SCREEN B: CAMPUS MAP & SEARCH -->
+        <div id="screen-map" class="proto-screen flex flex-col h-full bg-slate-50 pt-6">
+          
+          <!-- Search Header Bar -->
+          <div class="p-3 bg-white border-b border-slate-200 shadow-sm">
+            <div class="flex items-center gap-2 bg-slate-100 border border-slate-300 rounded-xl px-3 py-2">
+              <i class="fa-solid fa-magnifying-glass text-slate-400 text-sm"></i>
+              <input id="proto-search-input" type="text" placeholder="Search room (e.g., C01, Lab 3, Canteen)..." 
+                     class="bg-transparent text-xs font-medium w-full focus:outline-none"
+                     oninput="handleSearchInput(this.value)">
+              <button onclick="clearSearch()" class="text-slate-400 hover:text-slate-600 text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Filters Carousel -->
+            <div class="flex gap-2 mt-2.5 overflow-x-auto pb-1 text-[11px] font-semibold">
+              <button id="filter-accessible" onclick="toggleAccessibleFilter()" class="bg-sky-100 text-sky-800 border border-sky-300 px-2.5 py-1 rounded-full whitespace-nowrap flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-wheelchair text-sky-600"></i> Step-Free Ramps/Lifts
+              </button>
+              <button onclick="quickFilter('LHC')" class="bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-full whitespace-nowrap">📚 Lecture Halls</button>
+              <button onclick="quickFilter('Lab')" class="bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-full whitespace-nowrap">🔬 Labs</button>
+              <button onclick="quickFilter('Canteen')" class="bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-full whitespace-nowrap">☕ Canteen</button>
+            </div>
+          </div>
+
+          <!-- Dynamic IIIT-Delhi Masterplan Vector Map -->
+          <div class="flex-1 bg-emerald-50 relative overflow-hidden flex flex-col">
+            
+            <svg class="w-full h-full" viewBox="0 0 400 520">
+              <!-- Lawn & Site Base -->
+              <rect width="400" height="520" fill="#dcfce7"/>
+
+              <!-- Outer Boundary Line -->
+              <rect x="10" y="10" width="380" height="500" rx="12" fill="none" stroke="#86efac" stroke-width="2" stroke-dasharray="6"/>
+
+              <!-- Central Athletic Oval Track -->
+              <ellipse cx="130" cy="220" rx="42" ry="70" fill="#a7f3d0" stroke="#10b981" stroke-width="2"/>
+              <text x="102" y="223" font-size="9" font-weight="bold" fill="#047857">Sports Oval</text>
+
+              <!-- Swimming Pool & Tennis Courts -->
+              <rect x="30" y="310" width="45" height="30" rx="4" fill="#38bdf8" stroke="#0284c7" stroke-width="1.5"/>
+              <text x="36" y="328" font-size="7" font-weight="bold" fill="#ffffff">Pool</text>
+              <rect x="85" y="310" width="50" height="30" rx="4" fill="#4ade80" stroke="#16a34a" stroke-width="1.5"/>
+              <text x="91" y="328" font-size="7" font-weight="bold" fill="#ffffff">Tennis</text>
+
+              <!-- G.B. Pant Institute Boundary -->
+              <rect x="225" y="170" width="155" height="170" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4"/>
+              <text x="250" y="250" font-size="9" font-weight="bold" fill="#94a3b8">G.B. Pant Poly Tech</text>
+
+              <!-- IIIT-DELHI PHASE 2 BUILDINGS -->
+
+              <!-- Old Academic Block (OAB) -->
+              <rect x="290" y="35" width="85" height="42" rx="5" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+              <text x="320" y="60" font-size="10" font-weight="bold" fill="#1e293b">OAB</text>
+
+              <!-- New Academic Block (NAB) & R&D Block -->
+              <rect x="290" y="90" width="85" height="60" rx="5" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+              <text x="300" y="125" font-size="9" font-weight="bold" fill="#1e293b">NAB & R&D</text>
+
+              <!-- Lecture Hall Complex (LHC) - Target Highlight -->
+              <rect id="map-lhc-block" x="215" y="35" width="65" height="50" rx="5" fill="#bae6fd" stroke="#0284c7" stroke-width="2.5"/>
+              <text x="233" y="64" font-size="10" font-weight="bold" fill="#0369a1">LHC</text>
+
+              <!-- Library & Student Center -->
+              <rect x="215" y="95" width="65" height="42" rx="5" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+              <text x="226" y="120" font-size="8" font-weight="bold" fill="#1e293b">Library</text>
+
+              <!-- Hostels Zone (H1, H2, H3, H4, Girls Hostel) -->
+              <rect x="25" y="35" width="165" height="70" rx="6" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+              <text x="65" y="75" font-size="11" font-weight="bold" fill="#1e293b">Hostels (H1-H4)</text>
+
+              <!-- Dining Block & Canteen -->
+              <rect x="25" y="120" width="115" height="38" rx="5" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+              <text x="45" y="143" font-size="9" font-weight="bold" fill="#1e293b">Dining / Canteen</text>
+
+              <!-- Faculty Housing -->
+              <rect x="225" y="360" width="150" height="120" rx="6" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+              <text x="260" y="425" font-size="10" font-weight="bold" fill="#1e293b">Faculty Housing</text>
+
+              <!-- Main Pedestrian Spine Path -->
+              <path d="M 105 105 L 105 175 L 247 175 L 247 85" fill="none" stroke="#fde047" stroke-width="7"/>
+
+              <!-- Animated Step-Free Accessible Route -->
+              <path id="svg-accessible-route" class="animated-route" d="M 105 105 L 105 175 L 247 175 L 247 85" 
+                    fill="none" stroke="#0284c7" stroke-width="4"/>
+
+              <!-- User Pin (Hostels) -->
+              <circle cx="105" cy="105" r="8" fill="#0284c7" stroke="#ffffff" stroke-width="2"/>
+              <text x="60" y="100" font-size="8" font-weight="bold" fill="#0284c7">📍 You (Hostel)</text>
+
+              <!-- Destination Pin (LHC Room C01) -->
+              <circle cx="247" cy="85" r="8" fill="#ef4444" stroke="#ffffff" stroke-width="2"/>
+              <text x="215" y="25" font-size="9" font-weight="bold" fill="#dc2626">🎯 Room C01</text>
+            </svg>
+
+            <!-- Indoor Floor Selector Widget -->
+            <div class="absolute right-3 top-3 bg-white rounded-xl shadow-lg border border-slate-200 flex flex-col overflow-hidden text-slate-700 font-bold text-xs">
+              <button onclick="switchFloor('4F')" class="floor-btn px-2.5 py-1.5 hover:bg-slate-100 border-b border-slate-200">4F</button>
+              <button onclick="switchFloor('3F')" class="floor-btn px-2.5 py-1.5 hover:bg-slate-100 border-b border-slate-200">3F</button>
+              <button id="floor-2f" onclick="switchFloor('2F')" class="floor-btn px-2.5 py-1.5 bg-sky-600 text-white border-b border-slate-200">2F</button>
+              <button onclick="switchFloor('1F')" class="floor-btn px-2.5 py-1.5 hover:bg-slate-100 border-b border-slate-200">1F</button>
+              <button onclick="switchFloor('G')" class="floor-btn px-2.5 py-1.5 hover:bg-slate-100">G</button>
+            </div>
+          </div>
+
+          <!-- Bottom Interactive Destination Drawer -->
+          <div id="drawer-destination" class="bg-white rounded-t-2xl p-4 shadow-2xl border-t border-slate-200 transition-all">
+            <div class="w-10 h-1 bg-slate-300 rounded-full mx-auto mb-2"></div>
+            
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <h3 id="drawer-title" class="font-bold text-sm text-slate-900">Tutorial Room C01</h3>
+                <p id="drawer-subtitle" class="text-xs text-slate-500">Lecture Hall Complex • 2nd Floor</p>
+              </div>
+              <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                4 mins (320m)
+              </span>
+            </div>
+
+            <div class="bg-sky-50 border border-sky-200 rounded-xl p-2.5 mb-3 flex items-center gap-2 text-xs text-sky-900">
+              <i class="fa-solid fa-wheelchair text-sky-600 text-sm"></i>
+              <span>Elevator B & Wheelchair Ramp Verified</span>
+            </div>
+
+            <div class="flex gap-2">
+              <button onclick="openPrototypeAt('screen-navigation')" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-location-arrow"></i> Start Navigation
+              </button>
+              <button onclick="openPrototypeAt('screen-preview')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-2.5 rounded-xl text-xs border border-slate-300 transition">
+                <i class="fa-solid fa-camera"></i> Photo
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom Phone App Navigation Bar -->
+          <div class="h-14 bg-white border-t border-slate-200 flex justify-around items-center px-2">
+            <button onclick="openPrototypeAt('screen-map')" class="flex flex-col items-center text-sky-600 font-bold text-[10px]">
+              <i class="fa-solid fa-map text-base"></i> Map
+            </button>
+            <button onclick="alert('Accessible Directory: Elevators, Ramps & Restrooms in OAB, NAB & LHC')" class="flex flex-col items-center text-slate-400 font-medium text-[10px] hover:text-slate-600">
+              <i class="fa-solid fa-wheelchair text-base"></i> Routes
+            </button>
+            <button onclick="alert('Campus Events: Induction, Seminars & Club Venues')" class="flex flex-col items-center text-slate-400 font-medium text-[10px] hover:text-slate-600">
+              <i class="fa-solid fa-calendar-days text-base"></i> Events
+            </button>
+          </div>
+        </div>
+
+        <!-- APP SCREEN C: STEP-BY-STEP WAYFINDING GUIDANCE -->
+        <div id="screen-navigation" class="proto-screen hidden flex-col h-full bg-slate-100 pt-6">
+          <div class="bg-sky-700 text-white p-4 shadow-md">
+            <div class="flex items-center gap-3">
+              <button onclick="openPrototypeAt('screen-map')" class="text-white hover:text-sky-200 text-lg"><i class="fa-solid fa-arrow-left"></i></button>
+              <div>
+                <span class="text-[10px] text-sky-200 uppercase font-bold tracking-wider">Step 2 of 3 • Step-Free Route</span>
+                <h3 class="font-bold text-sm">Navigating to Room C01</h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 bg-sky-50 border-b border-sky-200 flex items-center gap-3">
+            <div class="w-10 h-10 bg-sky-600 text-white rounded-xl flex items-center justify-center text-lg font-bold shadow">
+              🛗
+            </div>
+            <div>
+              <h4 class="font-bold text-xs text-sky-900">Take Elevator B to Floor 2</h4>
+              <p class="text-[11px] text-sky-700">Avoids central LHC staircase</p>
+            </div>
+          </div>
+
+          <div class="flex-1 p-4 space-y-3 overflow-y-auto">
+            <div class="bg-white p-3 rounded-xl border border-slate-200 text-xs shadow-sm opacity-60">
+              <span class="text-[9px] font-bold text-slate-400 uppercase">Step 1 (Completed)</span>
+              <p class="font-bold text-slate-700 mt-0.5">Cross central plaza from Hostels towards LHC</p>
+            </div>
+
+            <div class="bg-white p-3.5 rounded-xl border-2 border-sky-500 text-xs shadow-md">
+              <span class="text-[9px] font-bold text-sky-600 uppercase">Current Guidance</span>
+              <p class="font-bold text-slate-900 mt-1 text-sm">Turn right after exiting Elevator B</p>
+              <p class="text-slate-500 text-[11px] mt-1">Room C01 will be located 10 meters straight ahead on your left.</p>
+            </div>
+          </div>
+
+          <div class="p-4 bg-white border-t border-slate-200">
+            <button onclick="openPrototypeAt('screen-map')" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow">
+              End Navigation
+            </button>
+          </div>
+        </div>
+
+        <!-- APP SCREEN D: ENTRANCE & DOORWAY PHOTO PREVIEW -->
+        <div id="screen-preview" class="proto-screen hidden flex-col h-full bg-slate-100 pt-6">
+          <div class="bg-white p-3.5 border-b border-slate-200 flex items-center gap-3">
+            <button onclick="openPrototypeAt('screen-map')" class="text-slate-600 hover:text-slate-900"><i class="fa-solid fa-arrow-left"></i></button>
+            <h3 class="font-bold text-sm text-slate-800">Destination Visual Preview</h3>
+          </div>
+
+          <div class="flex-1 p-4 overflow-y-auto space-y-4">
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+              <div class="h-32 bg-slate-300 flex items-center justify-center text-slate-600 font-bold text-xs">
+                📷 [LHC Ground Floor Ramp Entrance]
+              </div>
+              <div class="p-3">
+                <h4 class="font-bold text-xs text-slate-800">LHC Ground Floor Ramp</h4>
+                <p class="text-[11px] text-slate-500 mt-0.5">Gentle gradient ramp directly beside main entrance glass doors.</p>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+              <div class="h-32 bg-sky-200 flex items-center justify-center text-sky-800 font-bold text-xs">
+                📷 [Room C01 Doorway - Floor 2]
+              </div>
+              <div class="p-3">
+                <h4 class="font-bold text-xs text-slate-800">Room C01 Doorway</h4>
+                <p class="text-[11px] text-slate-500 mt-0.5">Double glass doorway with tactile room plaque on the left wall.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 bg-white border-t border-slate-200">
+            <button onclick="openPrototypeAt('screen-navigation')" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl text-xs shadow transition">
+              Continue Navigation
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- JAVASCRIPT LOGIC & INTERACTIVITY -->
+  <script>
+    // VIEW SWITCHER LOGIC
+    function switchView(mode) {
+      const tabMindmap = document.getElementById('tab-mindmap');
+      const tabProto = document.getElementById('tab-prototype');
+      const viewMindmap = document.getElementById('view-mindmap');
+      const viewProto = document.getElementById('view-prototype');
+
+      if (mode === 'prototype') {
+        tabMindmap.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-white";
+        tabProto.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all text-white bg-sky-600 shadow-md";
+        viewMindmap.style.display = 'none';
+        viewProto.classList.remove('hidden');
+        viewProto.classList.add('flex');
+      } else {
+        tabProto.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-white";
+        tabMindmap.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all text-white bg-sky-600 shadow-md";
+        viewProto.classList.remove('flex');
+        viewProto.classList.add('hidden');
+        viewMindmap.style.display = 'block';
+        drawFlowArrows();
+      }
+    }
+
+    // OPEN PROTOTYPE AT A SPECIFIC SCREEN
+    function openPrototypeAt(screenId) {
+      switchView('prototype');
+      document.querySelectorAll('.proto-screen').forEach(s => s.classList.add('hidden'));
+      const target = document.getElementById(screenId);
+      if (target) target.classList.remove('hidden');
+    }
+
+    // TOGGLE STEP-FREE ACCESSIBLE FILTER
+    let isAccessibleActive = true;
+    function toggleAccessibleFilter() {
+      isAccessibleActive = !isAccessibleActive;
+      const btn = document.getElementById('filter-accessible');
+      const routePath = document.getElementById('svg-accessible-route');
+
+      if (isAccessibleActive) {
+        btn.className = "bg-sky-100 text-sky-800 border border-sky-300 px-2.5 py-1 rounded-full whitespace-nowrap flex items-center gap-1.5 transition";
+        routePath.style.display = "block";
+      } else {
+        btn.className = "bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-full whitespace-nowrap flex items-center gap-1.5 transition";
+        routePath.style.display = "none";
+      }
+    }
+
+    // SEARCH INPUT HANDLER
+    function handleSearchInput(query) {
+      const drawerTitle = document.getElementById('drawer-title');
+      const drawerSub = document.getElementById('drawer-subtitle');
+
+      if (query.trim() === '') {
+        drawerTitle.innerText = "Tutorial Room C01";
+        drawerSub.innerText = "Lecture Hall Complex • 2nd Floor";
+      } else {
+        drawerTitle.innerText = query;
+        drawerSub.innerText = "Calculated Location • IIIT-Delhi Campus";
+      }
+    }
+
+    function clearSearch() {
+      document.getElementById('proto-search-input').value = '';
+      handleSearchInput('');
+    }
+
+    function quickFilter(category) {
+      document.getElementById('proto-search-input').value = category;
+      handleSearchInput(category);
+    }
+
+    function switchFloor(floorLabel) {
+      document.querySelectorAll('.floor-btn').forEach(b => {
+        b.classList.remove('bg-sky-600', 'text-white');
+        b.classList.add('hover:bg-slate-100');
+      });
+      event.target.classList.add('bg-sky-600', 'text-white');
+      event.target.classList.remove('hover:bg-slate-100');
+    }
+
+    // DRAW SVG CONNECTING ARROWS BETWEEN WIREFRAME MINDMAP NODES
+    function drawFlowArrows() {
+      const svg = document.getElementById('flow-svg');
+      if (!svg) return;
+
+      // Remove existing paths
+      svg.querySelectorAll('.connection-path').forEach(p => p.remove());
+
+      const connections = [
+        { from: 'node-s1', to: 'node-s2' },
+        { from: 'node-s2', to: 'node-s3' },
+        { from: 'node-s3', to: 'node-s4' },
+        { from: 'node-s4', to: 'node-s5' },
+        { from: 'node-s5', to: 'node-s6' },
+        { from: 'node-s6', to: 'node-s7' },
+        { from: 'node-s7', to: 'node-s8' }
+      ];
+
+      const stageRect = document.getElementById('view-mindmap').getBoundingClientRect();
+
+      connections.forEach(conn => {
+        const elemA = document.getElementById(conn.from);
+        const elemB = document.getElementById(conn.to);
+
+        if (elemA && elemB) {
+          const rA = elemA.getBoundingClientRect();
+          const rB = elemB.getBoundingClientRect();
+
+          const x1 = rA.left + rA.width / 2 - stageRect.left;
+          const y1 = rA.top + rA.height / 2 - stageRect.top;
+          const x2 = rB.left + rB.width / 2 - stageRect.left;
+          const y2 = rB.top + rB.height / 2 - stageRect.top;
+
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          const dx = x2 - x1;
+          const dy = y2 - y1;
+          const cx1 = x1 + dx * 0.5;
+          const cy1 = y1;
+          const cx2 = x1 + dx * 0.5;
+          const cy2 = y2;
+
+          path.setAttribute('d', `M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`);
+          path.setAttribute('stroke', '#38bdf8');
+          path.setAttribute('stroke-width', '2.5');
+          path.setAttribute('fill', 'none');
+          path.setAttribute('stroke-dasharray', '6,4');
+          path.setAttribute('marker-end', 'url(#arrowhead)');
+          path.setAttribute('class', 'connection-path');
+
+          svg.appendChild(path);
+        }
+      });
+    }
+
+    window.addEventListener('load', drawFlowArrows);
+    window.addEventListener('resize', drawFlowArrows);
+  </script>
+</body>
+</html>
